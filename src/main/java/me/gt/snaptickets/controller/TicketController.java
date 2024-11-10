@@ -1,0 +1,107 @@
+package me.gt.snaptickets.controller;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import me.gt.snaptickets.dto.TicketDto;
+import me.gt.snaptickets.model.Ticket;
+import me.gt.snaptickets.service.ImageService;
+import me.gt.snaptickets.service.TicketService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+
+@RestController
+@RequestMapping("/ticket")
+@Tag(name = "票券 API", description = "管理票券的操作")
+public class TicketController {
+
+    @Autowired
+    private TicketService ticketService;
+
+    @Autowired
+    private ImageService imageService;
+
+    @Operation(summary = "建立票券")
+    @PostMapping(value = "/create")
+    public ResponseEntity<String> createTicket(@RequestBody TicketDto ticketDto) {
+        try {
+            ticketService.createTicket( ticketDto.convertToTicket());
+            return ResponseEntity.ok("票券已創建");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "圖片網址")
+    @GetMapping(value = "/image/{id}/image.png", produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> getImage(@PathVariable String id) {
+        Ticket ticket = ticketService.getByTicketId(id);
+        if (ticket == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        return ResponseEntity.ok(ticket.getImage());
+    }
+
+    @Operation(summary = "圖片網址(指定寬高)")
+    @GetMapping(value = "/images/{id}/{width}x{height}/image.png", produces = MediaType.IMAGE_PNG_VALUE)
+    public ResponseEntity<byte[]> getImage(@PathVariable String id, @PathVariable int width, @PathVariable int height) {
+        Ticket ticket = ticketService.getByTicketId(id);
+        if (ticket == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        byte[] image = ticket.getImage();
+        if (image == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        byte[] resizedImage = imageService.resizeImage(image, width, height);
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resizedImage);
+    }
+
+    @Operation(summary = "上傳票券圖片")
+    @PostMapping(value = "/upload/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadImage(@PathVariable String id, @RequestPart MultipartFile image) {
+        try {
+            TicketService.ActionStatus status = ticketService.updateImage(id, image.getBytes());
+            if (status == TicketService.ActionStatus.UPDATE_FAILED) {
+                return ResponseEntity.badRequest().body("圖片上傳失敗");
+            }
+            return ResponseEntity.ok("圖片上傳成功");
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body("圖片上傳失敗");
+        }
+    }
+
+    @Operation(summary = "獲取票券資料")
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> getTicketById(@PathVariable String id) {
+        Ticket ticket = ticketService.getByTicketId(id);
+        if (ticket == null) {
+            return ResponseEntity.badRequest().body("查無此票券");
+        }
+        return ResponseEntity.ok(ticket);
+    }
+
+    @Operation(summary = "更新票券")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> updateTicket(@PathVariable String id, @RequestBody TicketDto ticketDto) {
+        TicketService.ActionStatus status = ticketService.updateTicket(ticketDto.convertToTicket(id));
+        if (status == TicketService.ActionStatus.UPDATE_FAILED) {
+            return ResponseEntity.badRequest().body("票券更新失敗");
+        }
+        return ResponseEntity.ok("票券已更新");
+    }
+
+    @Operation(summary = "刪除票券")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteTicket(@PathVariable String id) {
+        TicketService.ActionStatus status = ticketService.deleteTicket(id);
+        if (status == TicketService.ActionStatus.DELETE_FAILED) {
+            return ResponseEntity.badRequest().body("票券刪除失敗");
+        }
+        return ResponseEntity.ok("票券已刪除");
+    }
+}

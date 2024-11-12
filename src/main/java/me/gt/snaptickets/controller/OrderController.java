@@ -43,13 +43,13 @@ public class OrderController {
     }
 
     @Operation(summary = "查詢訂單")
-    @GetMapping("/order/{id}")
+    @GetMapping("/info/{id}")
     public ResponseEntity<Order> getOrder(@PathVariable("id") String id) {
         return ResponseEntity.ok(orderService.getOrderByOrderId(id));
     }
 
     @Operation(summary = "更新訂單狀態")
-    @PostMapping("/order/{id}")
+    @PostMapping("/update/{id}")
     public ResponseEntity<String> updateOrderStatus(@PathVariable("id") String id, @RequestBody Order.Status status) {
         OrderService.ActionStatus action = orderService.updateOrderStatus(id, status);
         if (action == OrderService.ActionStatus.UPDATE_SUCCESS) {
@@ -60,7 +60,7 @@ public class OrderController {
     }
 
     @Operation(summary = "刪除訂單")
-    @DeleteMapping("/order/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteOrder(@PathVariable("id") String id) {
         orderService.deleteOrder(id);
         return ResponseEntity.ok("刪除成功");

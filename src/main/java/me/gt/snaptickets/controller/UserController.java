@@ -33,7 +33,7 @@ public class UserController {
     private UserTicketService userTicketService;
 
 
-    @Value("${jwt.secret}")
+    @Value("${jwt.user.secret}")
     private String jwtSecret;
 
     @Operation(summary = "註冊帳號")
@@ -62,7 +62,7 @@ public class UserController {
         return ResponseEntity.ok().body(Map.of("username", user.getUsername(), "token", token));
     }
 
-    @Operation(summary = "透過帳號查詢資料")
+    @Operation(summary = "查詢帳號資料")
     @GetMapping("/user/info/{username}")
     public ResponseEntity<Object> getUserByUsername(@PathVariable String username) {
         User user = userService.getByUsername(username);
@@ -91,7 +91,7 @@ public class UserController {
     }
 
     @Operation(summary = "更新帳號資訊")
-    @PutMapping("/user")
+    @PutMapping("/user/update")
     public ResponseEntity<Object> updateUser(@RequestBody UserDto user) {
         boolean success = userService.updateUser(user.convertToUser());
         if (success) {
@@ -101,7 +101,7 @@ public class UserController {
     }
 
     @Operation(summary = "更改帳號密碼")
-    @PutMapping("/change-password/{username}")
+    @PutMapping("/user/change-password/{username}")
     public ResponseEntity<String> updatePassword(@PathVariable String username, @RequestParam String oldPassword, @RequestParam String newPassword) {
         String validationMessage = PasswordUtil.validatePassword(newPassword); // 驗證新密碼是否符合安全性要求
         if (validationMessage != null) {
@@ -117,7 +117,7 @@ public class UserController {
     }
 
     @Operation(summary = "刪除帳號")
-    @DeleteMapping("/user/{username}")
+    @DeleteMapping("/user/delete/{username}")
     public ResponseEntity<String> deleteUser(@PathVariable String username) {
         userService.deleteUser(username);
         return ResponseEntity.ok("帳號已刪除");

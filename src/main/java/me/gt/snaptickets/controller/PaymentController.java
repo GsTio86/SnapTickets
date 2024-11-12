@@ -69,7 +69,7 @@ public class PaymentController {
     }
 
     @Operation(summary = "查詢指定條件的付款資料")
-    @GetMapping(value = "/payments/search")
+    @GetMapping(value = "/search")
     public ResponseEntity<List<Payment>> searchPayments(
             @RequestParam(value = "paymentId", required = false) String paymentId,
             @RequestParam(value = "orderId", required = false) String orderId,
@@ -80,7 +80,7 @@ public class PaymentController {
     }
 
     @Operation(summary = "更新付款資料狀態")
-    @PutMapping(value = "/payments/{id}")
+    @PutMapping(value = "/update/{id}")
     public ResponseEntity<String> updatePaymentStatus(@PathVariable("id") String id, @RequestParam("status") Payment.Status status) {
         try {
             paymentService.updatePaymentStatus(id, status.getName());
@@ -91,7 +91,7 @@ public class PaymentController {
     }
 
     @Operation(summary = "刪除付款資料")
-    @DeleteMapping(value = "/payments/{id}")
+    @DeleteMapping(value = "/delete/{id}")
     public ResponseEntity<String> deletePayment(@PathVariable("id") String id) {
         try {
             paymentService.deletePayment(id);

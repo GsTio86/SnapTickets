@@ -77,7 +77,7 @@ public class TicketController {
     }
 
     @Operation(summary = "獲取票券資料")
-    @GetMapping("/{id}")
+    @GetMapping("/info/{id}")
     public ResponseEntity<Object> getTicketById(@PathVariable String id) {
         Ticket ticket = ticketService.getByTicketId(id);
         if (ticket == null) {
@@ -93,7 +93,7 @@ public class TicketController {
     }
 
     @Operation(summary = "更新票券")
-    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> updateTicket(@PathVariable String id, @RequestBody TicketDto ticketDto) {
         TicketService.ActionStatus status = ticketService.updateTicket(ticketDto.convertToTicket(id));
         if (status == TicketService.ActionStatus.UPDATE_FAILED) {
@@ -103,7 +103,7 @@ public class TicketController {
     }
 
     @Operation(summary = "刪除票券")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteTicket(@PathVariable String id) {
         TicketService.ActionStatus status = ticketService.deleteTicket(id);
         if (status == TicketService.ActionStatus.DELETE_FAILED) {

@@ -46,6 +46,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean verifyTokenLogin(String username, String password) {
+        User user = userMapper.getByUsername(username);
+        if (user == null) {
+            return false;
+        }
+        if (password.equals(user.getPassword())) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public User getByUsername(String username) {
         return userMapper.getByUsername(username);
     }

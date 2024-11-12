@@ -6,6 +6,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import me.gt.snaptickets.model.User;
+import me.gt.snaptickets.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,8 +19,11 @@ import java.util.ArrayList;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Value("${jwt.secret}")
+    @Value("${jwt.user.secret}")
     private String jwtSecret;
+
+    @Autowired
+    private UserService userService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -31,13 +37,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         .parseClaimsJws(token)
                         .getBody();
                 String username = claims.getSubject();
-                if (username != null) {
+                String password = (String) claims.get("password");
+                if (username != null && password != null) {
+                    if (!userService.verifyTokenLogin(username,password)) { // Token 異常 登入密碼不對
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        return;
+                    }
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Token 解析異常
                 return;
             }
         }

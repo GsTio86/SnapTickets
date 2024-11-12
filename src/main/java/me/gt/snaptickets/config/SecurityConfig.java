@@ -45,10 +45,10 @@ public class SecurityConfig {
     @Order(2)
     public SecurityFilterChain userSecurityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .securityMatcher("/user/**", "/api/**", "/order/**")
+                .securityMatcher("/user/**",  "/order/**")
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/user/**", "/api/**", "/order/**").authenticated())
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/user/**",  "/order/**").authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -60,7 +60,7 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> {
-            auth.requestMatchers( "/","/swagger-ui/**", "/api-docs/**", "/auth/**",
+            auth.requestMatchers( "/","/api/**","/swagger-ui/**", "/api-docs/**", "/auth/**",
                              "/ticket/info/*","/ticket/all", "/ticket/*/image.png", "/ticket/*/*/image.png",
                     "/payment/client", "/payment/result")
                     .permitAll();

@@ -29,7 +29,7 @@ public class OrderDto {
     @Schema(description = "付款方式")
     private Payment.Method paymentMethod;
 
-    @Schema(description = "付款狀態")
+    @Schema(description = "付款狀態", accessMode = Schema.AccessMode.READ_ONLY)
     private Payment.Status paymentStatus;
 
     public Order convertToOrder() {

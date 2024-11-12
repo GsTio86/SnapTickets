@@ -42,7 +42,7 @@ public class TicketDto {
                 .description(description)
                 .price(price)
                 .stock(stock)
-                .eventDate(parseEventDate())
+                .startDate(parseEventDate())
                 .build();
     }
 
@@ -60,7 +60,7 @@ public class TicketDto {
                 .description(description)
                 .price(price)
                 .stock(stock)
-                .eventDate(parseEventDate())
+                .startDate(parseEventDate())
                 .build();
     }
 

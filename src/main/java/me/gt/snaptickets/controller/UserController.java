@@ -3,19 +3,37 @@ package me.gt.snaptickets.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import me.gt.snaptickets.dto.UserDto;
+import me.gt.snaptickets.model.Order;
 import me.gt.snaptickets.model.User;
+import me.gt.snaptickets.model.UserTicket;
+import me.gt.snaptickets.service.OrderService;
 import me.gt.snaptickets.service.UserService;
+import me.gt.snaptickets.service.UserTicketService;
 import me.gt.snaptickets.util.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
-@Tag(name = "會員 API", description = "處理會員的操作")
-public class AuthController {
+@Tag(name = "會員 API", description = "處理會員帳號操作")
+public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private OrderService orderService;
+
+    @Autowired
+    private UserTicketService userTicketService;
+
+
+    @Value("${jwt.secret}")
+    private String jwtSecret;
 
     @Operation(summary = "註冊帳號")
     @PostMapping("/auth/register")
@@ -39,11 +57,12 @@ public class AuthController {
         if (user == null) {
             return ResponseEntity.badRequest().body("帳號或密碼錯誤");
         }
-        return ResponseEntity.ok(UserDto.fromUser(user));
+        String token = PasswordUtil.generateJwtToken(user,jwtSecret);
+        return ResponseEntity.ok().body(Map.of("username", user.getUsername(), "token", token));
     }
 
     @Operation(summary = "透過帳號查詢資料")
-    @GetMapping("/users/{username}")
+    @GetMapping("/user/info/{username}")
     public ResponseEntity<Object> getUserByUsername(@PathVariable String username) {
         User user = userService.getByUsername(username);
         if (user == null) {
@@ -52,8 +71,26 @@ public class AuthController {
         return ResponseEntity.ok(UserDto.fromUser(user));
     }
 
+    @Operation(summary = "查詢訂單")
+    @GetMapping("/user/order/{username}")
+    public ResponseEntity<List<Order>> getOrdersByUsername(@PathVariable("username") String username) {
+        return ResponseEntity.ok(orderService.getOrdersByUsername(username));
+    }
+
+    @Operation(summary = "查詢擁有的票券")
+    @GetMapping("/user/ticket/{username}")
+    public ResponseEntity<List<UserTicket>> getTicketByUsername(@PathVariable("username") String username) {
+        return ResponseEntity.ok(userTicketService.getUserTicketByUsername(username));
+    }
+
+    @Operation(summary = "查詢擁有的票券資料")
+    @GetMapping("/user/ticket/info/{orderid}")
+    public ResponseEntity<List<UserTicket>> getTicketByUsernameAndOrderId(@PathVariable("orderid") String orderid) {
+        return ResponseEntity.ok(userTicketService.getUserTicketByOrderId(orderid));
+    }
+
     @Operation(summary = "更新帳號資訊")
-    @PutMapping("/users")
+    @PutMapping("/user")
     public ResponseEntity<Object> updateUser(@RequestBody UserDto user) {
         boolean success = userService.updateUser(user.convertToUser());
         if (success) {
@@ -63,7 +100,7 @@ public class AuthController {
     }
 
     @Operation(summary = "更改帳號密碼")
-    @PutMapping("/users/{username}/password")
+    @PutMapping("/change-password/{username}")
     public ResponseEntity<String> updatePassword(@PathVariable String username, @RequestParam String oldPassword, @RequestParam String newPassword) {
         String validationMessage = PasswordUtil.validatePassword(newPassword); // 驗證新密碼是否符合安全性要求
         if (validationMessage != null) {
@@ -79,7 +116,7 @@ public class AuthController {
     }
 
     @Operation(summary = "刪除帳號")
-    @DeleteMapping("/users/{username}")
+    @DeleteMapping("/user/{username}")
     public ResponseEntity<String> deleteUser(@PathVariable String username) {
         userService.deleteUser(username);
         return ResponseEntity.ok("帳號已刪除");

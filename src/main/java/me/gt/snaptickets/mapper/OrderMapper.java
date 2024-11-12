@@ -22,7 +22,8 @@ public interface OrderMapper {
             @Result(column = "orderstatus", property = "orderStatus"),
             @Result(column = "createdat", property = "createdAt"),
             @Result(column = "updatedat", property = "updatedAt"),
-            @Result(column = "username", property = "user", one = @One(select = "me.gt.snaptickets.mapper.UserMapper.getByUsername"))
+            @Result(column = "username", property = "user", one = @One(select = "me.gt.snaptickets.mapper.UserMapper.getByUsername")),
+            @Result(column = "ticketid", property = "ticket", one = @One(select = "me.gt.snaptickets.mapper.TicketMapper.getById"))
     })
     Order getById(String orderId);
 
@@ -30,9 +31,11 @@ public interface OrderMapper {
     List<Order> getAll();
 
     @Select("SELECT * FROM orders WHERE username = #{username}")
+    @ResultMap("OrderWithUser")
     List<Order> getByUsername(String username);
 
     @Select("SELECT * FROM orders WHERE orderstatus = #{orderStatus}")
+    @ResultMap("OrderWithUser")
     List<Order> getByOrderStatus(Order.Status orderStatus);
 
     @Update("UPDATE orders SET orderstatus = #{orderStatus}, updatedat = CURRENT_TIMESTAMP " + "WHERE orderid = #{orderId}")

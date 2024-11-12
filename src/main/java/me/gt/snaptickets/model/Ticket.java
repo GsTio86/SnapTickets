@@ -1,9 +1,9 @@
 package me.gt.snaptickets.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import me.gt.snaptickets.util.IdUtil;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -25,6 +25,7 @@ public class Ticket {
     private String description;
 
     @Schema(description = "圖片")
+    @JsonIgnore
     private byte[] image;
 
     @Schema(description = "價格")
@@ -33,8 +34,11 @@ public class Ticket {
     @Schema(description = "庫存數量")
     private Integer stock;
 
-    @Schema(description = "活動日期")
-    private LocalDateTime eventDate;
+    @Schema(description = "開賣日期")
+    private LocalDateTime startDate;
+
+    @Schema(description = "結束日期")
+    private LocalDateTime endDate;
 
     @Schema(description = "建立日期")
     private LocalDateTime createdAt;

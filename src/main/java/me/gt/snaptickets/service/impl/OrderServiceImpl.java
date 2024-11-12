@@ -30,11 +30,11 @@ public class OrderServiceImpl implements OrderService {
 
     private static final String TICKET_STOCK = "ticket_stock:";
 
-    private static final long LOCK_EXPIRY_TIME = 15;
+    private static final long LOCK_EXPIRY_TIME = 10;
 
     @Override
     @Transactional
-    public String createOrder(Order order) {
+    public ActionStatus createOrder(Order order) {
         String stockKey = TICKET_STOCK + order.getTicketId(); // 票券庫存key
         String lockKey = TICKET_LOCK + order.getTicketId(); // 票券鎖key
         String lockValue = order.getOrderId(); // 鎖的值 只有持有鎖的人才能解鎖
@@ -46,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
                 if (redisStockOptional.isEmpty()) {
                     Ticket ticket = ticketService.getByTicketId(order.getTicketId());
                     if (ticket == null) {
-                        return "查無此票券";
+                        return ActionStatus.NOT_FOUND;
                     }
                     cacheStock = ticket.getStock();
                     redisService.set(stockKey, cacheStock);
@@ -60,17 +60,17 @@ public class OrderServiceImpl implements OrderService {
                     ticketService.reduceStock(order.getTicketId(), order.getQuantity()); // 扣除資料庫的庫存數量
 
                     orderMapper.createOrder(order); // 建立訂單
-                    return order.getOrderId();
+                    return ActionStatus.CREATE_SUCCESS;
                 } else {
-                    return "票券庫存不足";
+                    return ActionStatus.STOCK_NOT_ENOUGH;
                 }
             } catch (InsufficientStockException e) {
-                return e.getMessage();
+                return ActionStatus.STOCK_NOT_ENOUGH;
             } finally {
                 redisService.unlock(lockKey, lockValue); // 解鎖
             }
         } else {
-            return "伺服器忙碌中，請稍後再試";
+            return ActionStatus.SERVER_BUSY;
         }
     }
 
@@ -87,6 +87,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> getOrdersByStatus(Order.Status status) {
         return orderMapper.getByOrderStatus(status);
+    }
+
+    @Override
+    public List<Order> getOrdersByUsername(String username) {
+        return orderMapper.getByUsername(username);
     }
 
     @Override

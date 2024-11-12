@@ -11,6 +11,7 @@ public class IdUtil {
     private static final String TICKET_PREFIX = "TICKET";
     private static final String ORDER_PREFIX = "ORDER";
     private static final String PAYMENT_PREFIX = "PAY";
+    private static final String USER_TICKET_PREFIX = "USER_TICKET";
 
     /*
      * 產生票券編號
@@ -37,6 +38,24 @@ public class IdUtil {
      */
     public static String generatePaymentId() {
         return String.format("%s%s", PAYMENT_PREFIX, generateUidWithTimestamp());
+    }
+
+    /*
+     * 產生使用者票券編號
+     * 使用者票券編號格式為 USER_TICKET-{timestamp}-{uid}
+     * @return 使用者票券編號
+     */
+    public static String generateUserTicketId() {
+        return String.format("%s%s", USER_TICKET_PREFIX, generateUidWithTimestamp());
+    }
+
+    /*
+     * 產生票券代碼
+     * 票券代碼格式為 12碼英數字 大寫
+     * @return 票券代碼
+     */
+    public static String generateTicketCode() {
+        return UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase();
     }
 
     /*

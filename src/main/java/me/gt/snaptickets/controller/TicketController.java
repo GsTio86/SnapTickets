@@ -37,7 +37,7 @@ public class TicketController {
     }
 
     @Operation(summary = "圖片網址")
-    @GetMapping(value = "/image/{id}/image.png", produces = MediaType.IMAGE_JPEG_VALUE)
+    @GetMapping(value = "/{id}/image.png", produces = MediaType.IMAGE_PNG_VALUE)
     public ResponseEntity<byte[]> getImage(@PathVariable String id) {
         Ticket ticket = ticketService.getByTicketId(id);
         if (ticket == null) {
@@ -47,7 +47,7 @@ public class TicketController {
     }
 
     @Operation(summary = "圖片網址(指定寬高)")
-    @GetMapping(value = "/images/{id}/{width}x{height}/image.png", produces = MediaType.IMAGE_PNG_VALUE)
+    @GetMapping(value = "/{id}/{width}x{height}/image.png", produces = MediaType.IMAGE_PNG_VALUE)
     public ResponseEntity<byte[]> getImage(@PathVariable String id, @PathVariable int width, @PathVariable int height) {
         Ticket ticket = ticketService.getByTicketId(id);
         if (ticket == null) {
@@ -58,7 +58,7 @@ public class TicketController {
             return ResponseEntity.badRequest().body(null);
         }
         byte[] resizedImage = imageService.resizeImage(image, width, height);
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resizedImage);
+        return ResponseEntity.ok().body(resizedImage);
     }
 
     @Operation(summary = "上傳票券圖片")
@@ -83,6 +83,12 @@ public class TicketController {
             return ResponseEntity.badRequest().body("查無此票券");
         }
         return ResponseEntity.ok(ticket);
+    }
+
+    @Operation(summary = "獲取所有票券")
+    @GetMapping("/all")
+    public ResponseEntity<Object> getAllTickets() {
+        return ResponseEntity.ok(ticketService.getAllTickets());
     }
 
     @Operation(summary = "更新票券")

@@ -27,16 +27,37 @@ public class RedisServiceImpl implements RedisService {
 
     @Override
     public boolean tryLock(String key, Object value, long time) {
-        boolean result = redisTemplate.opsForValue().setIfAbsent(key, value, time, TimeUnit.SECONDS);
-        return result;
+        int retries = 3;
+        for (int i = 0; i < retries; i++) {
+            try {
+                Boolean result = redisTemplate.opsForValue().setIfAbsent(key, value, time, TimeUnit.SECONDS);
+                if (Boolean.TRUE.equals(result)) {
+                    return true;
+                } else if (result == null) {
+                    Thread.sleep(100);
+                } else {
+                    return false;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 
     @Override
     public boolean unlock(String key, Object value) {
-        if (value.equals(redisTemplate.opsForValue().get(key))) { // 確認是否為自己的鎖
-            boolean result = Boolean.TRUE.equals(redisTemplate.delete(key));
-            return result;
+        try {
+            if (value.equals(redisTemplate.opsForValue().get(key))) {
+                Boolean result = redisTemplate.delete(key);
+                if (result != null && result) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return false;
     }
+
 }

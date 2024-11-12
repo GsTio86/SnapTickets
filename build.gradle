@@ -33,6 +33,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-logging'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
     implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.12.6'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+
 
     implementation 'org.apache.logging.log4j:log4j-core:2.23.1'
     implementation files("${rootDir}/libs/javax.servlet-3.0.0.v201112011016.jar")

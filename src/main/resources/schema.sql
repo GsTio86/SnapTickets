@@ -26,7 +26,8 @@ CREATE TABLE IF NOT EXISTS tickets (
     image BYTEA,
     price INT NOT NULL,
     stock INT NOT NULL,
-    eventDate TIMESTAMP NOT NULL,
+    startDate TIMESTAMP,
+    endDate TIMESTAMP,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -38,7 +39,8 @@ COMMENT ON COLUMN tickets.description IS '票券描述';
 COMMENT ON COLUMN tickets.image IS '票券圖片';
 COMMENT ON COLUMN tickets.price IS '票券價格';
 COMMENT ON COLUMN tickets.stock IS '庫存數量';
-COMMENT ON COLUMN tickets.eventDate IS '活動日期';
+COMMENT ON COLUMN tickets.startDate IS '開賣日期';
+COMMENT ON COLUMN tickets.endDate IS '結束日期';
 COMMENT ON COLUMN tickets.createdAt IS '建立時間';
 COMMENT ON COLUMN tickets.updatedAt IS '更新時間';
 
@@ -85,4 +87,30 @@ COMMENT ON COLUMN payments.paymentStatus IS '付款狀態';
 COMMENT ON COLUMN payments.paymentAmount IS '付款金額';
 COMMENT ON COLUMN payments.createdAt IS '建立時間';
 COMMENT ON COLUMN payments.updatedAt IS '更新時間';
+
+
+-- 建立票券使用資料表
+CREATE TABLE IF NOT EXISTS user_ticket (
+    userTicketId VARCHAR PRIMARY KEY,
+    username VARCHAR(20) NOT NULL,
+    orderId VARCHAR NOT NULL,
+    ticketId VARCHAR NOT NULL,
+    code VARCHAR(36) NOT NULL,
+    status VARCHAR(20) NOT NULL,
+    issuedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    usedAt TIMESTAMP,
+    expiredAt TIMESTAMP
+);
+
+
+-- 設定票券使用資料表的註解
+COMMENT ON COLUMN user_ticket.userTicketId IS '使用者票券編號';
+COMMENT ON COLUMN user_ticket.username IS '使用者帳號';
+COMMENT ON COLUMN user_ticket.orderId IS '訂單編號';
+COMMENT ON COLUMN user_ticket.ticketId IS '票券編號';
+COMMENT ON COLUMN user_ticket.code IS '票券代碼';
+COMMENT ON COLUMN user_ticket.status IS '使用狀態';
+COMMENT ON COLUMN user_ticket.issuedAt IS '獲得時間';
+COMMENT ON COLUMN user_ticket.usedAt IS '使用時間';
+COMMENT ON COLUMN user_ticket.expiredAt IS '使用期限';
 

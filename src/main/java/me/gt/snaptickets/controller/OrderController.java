@@ -1,9 +1,9 @@
 package me.gt.snaptickets.controller;
 
-import ecpay.payment.integration.exception.EcpayException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import me.gt.snaptickets.dto.OrderDto;
+import me.gt.snaptickets.exception.CreatePaymentException;
 import me.gt.snaptickets.model.Order;
 import me.gt.snaptickets.service.OrderService;
 import me.gt.snaptickets.service.PaymentService;
@@ -30,7 +30,7 @@ public class OrderController {
         try {
             String form = paymentService.createPayment(orderDto);
             return ResponseEntity.ok(form);
-        } catch (EcpayException e) {
+        } catch (CreatePaymentException e) {
             return ResponseEntity.badRequest().body("錯誤|訂單建立失敗");
         }
     }

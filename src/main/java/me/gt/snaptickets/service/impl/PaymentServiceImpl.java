@@ -8,6 +8,7 @@ import ecpay.payment.integration.domain.AioCheckOutALL;
 import ecpay.payment.integration.exception.EcpayException;
 import me.gt.snaptickets.dto.OrderDto;
 import me.gt.snaptickets.dto.PaymentSearchDTO;
+import me.gt.snaptickets.exception.CreatePaymentException;
 import me.gt.snaptickets.mapper.PaymentMapper;
 import me.gt.snaptickets.model.Order;
 import me.gt.snaptickets.model.Payment;
@@ -15,6 +16,7 @@ import me.gt.snaptickets.model.Ticket;
 import me.gt.snaptickets.service.OrderService;
 import me.gt.snaptickets.service.PaymentService;
 import me.gt.snaptickets.service.TicketService;
+import me.gt.snaptickets.service.UserTicketService;
 import me.gt.snaptickets.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +38,9 @@ public class PaymentServiceImpl implements PaymentService {
     @Autowired
     private TicketService ticketService;
 
+    @Autowired
+    private UserTicketService userTicketService;
+
     @Value("${payment.ecpay.return-url}")
     private String ecpayReturnUrl;
 
@@ -47,25 +52,38 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public String createPayment(OrderDto orderDto) throws EcpayException {
+    public String createPayment(OrderDto orderDto) throws CreatePaymentException {
         AllInOne aio = new AllInOne("");
         AioCheckOutALL obj = new AioCheckOutALL();
         Order order = orderDto.convertToOrder(); // 轉換為訂單資料
-        orderService.createOrder(order); // 建立訂單
+
+        OrderService.ActionStatus orderCreateStatus = orderService.createOrder(order); // 建立訂單 (建立過程中可能會有例外狀況)
+
+        // 根據建立訂單的結果回傳不同的例外 好讓前端顯示不同的錯誤訊息
+        switch (orderCreateStatus) {
+            case NOT_FOUND -> throw new CreatePaymentException("找不到票券");
+            case STOCK_NOT_ENOUGH -> throw new CreatePaymentException("庫存不足");
+            case SERVER_BUSY -> throw new CreatePaymentException("伺服器忙碌中");
+        }
+
+        // 建立付款資料
         Payment payment = Payment.builder()
                 .orderId(order.getOrderId())
                 .paymentMethod(orderDto.getPaymentMethod())
                 .paymentAmount(order.getTotalPrice())
                 .build();
 
+        // 取得票券資料
         Ticket ticket = ticketService.getByTicketId(order.getTicketId());
 
+        // 設定金流付款資料
         obj.setMerchantTradeNo(payment.getPaymentId());
         obj.setMerchantTradeDate(payment.getCreatedAt().format(DateUtil.standardDataFormat));
         obj.setTradeDesc(ticket.getDescription());
         obj.setItemName(String.format("%s x %d", ticket.getName(), order.getQuantity()));
         obj.setTotalAmount(String.valueOf(payment.getPaymentAmount().intValue()));
 
+        // 廠商後台查詢用的自訂欄位
         obj.setCustomField1(order.getOrderId());
         obj.setCustomField2(order.getTicketId());
         obj.setCustomField3(order.getUsername());
@@ -90,7 +108,7 @@ public class PaymentServiceImpl implements PaymentService {
             paymentMapper.createPayment(payment); // 將付款資料存入資料庫
             return form;
         } catch (EcpayException e) {
-            throw new EcpayException(e.getMessage());
+            throw new CreatePaymentException(e.getMessage());
         }
     }
 
@@ -186,8 +204,16 @@ public class PaymentServiceImpl implements PaymentService {
             if(result.containsKey("MerchantTradeNo")){
                 merchantTradeNo = result.get("MerchantTradeNo");
             }
+            Payment payment = getByPaymentId(merchantTradeNo);
+            if (payment == null) {
+                return new PaymentResult(6, "付款資料遺失");
+            }
             switch (rtnCode) {
                 case 1 -> {  // 付款成功
+                    Order order = payment.getOrder();
+                    orderService.updateOrderStatus(order.getOrderId(), Order.Status.PAID); // 更新訂單狀態為已付款
+
+                    userTicketService.giveUserTicket(payment); // 發放票券
                     if (simulatePaid) {
                         updatePaymentStatus(merchantTradeNo, Payment.Status.SIMULATING);
                         return new PaymentResult(1, "模擬付款成功");

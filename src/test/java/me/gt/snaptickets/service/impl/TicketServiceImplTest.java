@@ -23,7 +23,7 @@ class TicketServiceImplTest {
                 .name("測試票券")
                 .description("這是一張測試票券")
                 .stock(100)
-                .eventDate(LocalDateTime.parse("2024/11/25 23:59:59", DateUtil.standardDataFormat))
+                .startDate(LocalDateTime.parse("2024/11/25 23:59:59", DateUtil.standardDataFormat))
                 .price(BigDecimal.valueOf(1000))
                 .build();
         service.createTicket(ticket);
@@ -77,7 +77,7 @@ class TicketServiceImplTest {
         ticket.setName("更新票券");
         ticket.setDescription("這是一張測試用的票券啦~");
         ticket.setStock(200);
-        ticket.setEventDate(LocalDateTime.parse("2024/11/08 00:59:59", DateUtil.standardDataFormat));
+        ticket.setStartDate(LocalDateTime.parse("2024/11/08 00:59:59", DateUtil.standardDataFormat));
         ticket.setPrice(BigDecimal.valueOf(2000));
         service.updateTicket(ticket);
         System.out.println("更新票券成功");

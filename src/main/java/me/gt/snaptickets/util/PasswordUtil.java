@@ -1,10 +1,19 @@
 package me.gt.snaptickets.util;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import me.gt.snaptickets.model.User;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
+import java.util.Date;
 import java.util.regex.Pattern;
 
 public class PasswordUtil {
+
+    /**
+     * JWT 密鑰過期時間 (一天)
+     */
+    private static final long jwtExpirationMs = 86400000;
 
     /**
      * 密碼安全性正則表達式
@@ -16,6 +25,22 @@ public class PasswordUtil {
      */
     private static final Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
 
+
+    /**
+     * 生成 JWT Token
+     * @param user
+     * @return JWT Token
+     */
+    public static String generateJwtToken(User user, String jwtSecret) {
+        System.out.println("key: " + jwtSecret);
+        return Jwts.builder()
+                .setSubject(user.getUsername())
+                .claim("email", user.getEmail())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+                .signWith(SignatureAlgorithm.HS256, jwtSecret)
+                .compact();
+    }
 
     /**
      * 生成密碼鹽值

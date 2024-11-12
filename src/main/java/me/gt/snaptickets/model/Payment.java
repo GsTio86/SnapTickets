@@ -32,10 +32,12 @@ public class Payment {
     private BigDecimal paymentAmount;
 
     @Schema(description = "付款建立時間")
-    private LocalDateTime createdAt;
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Schema(description = "付款更新時間")
-    private LocalDateTime updatedAt;
+    @Builder.Default
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     private Order order;
 

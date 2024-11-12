@@ -13,7 +13,7 @@ public interface OrderService {
      *
      * @return 訂單資料
      */
-    String createOrder(Order order);
+    ActionStatus createOrder(Order order);
 
 
     /**
@@ -43,6 +43,13 @@ public interface OrderService {
 
 
     /**
+     * 透過使用者名稱查詢訂單
+     * @param username
+     * @return 訂單列表
+     */
+    List<Order> getOrdersByUsername(String username);
+
+    /**
      * 更新訂單
      *
      * @param id 訂單ID
@@ -60,11 +67,14 @@ public interface OrderService {
      */
     void deleteOrder(String orderId);
 
-
     /**
      * 訂單狀態
      */
     enum ActionStatus {
+        NOT_FOUND,
+        STOCK_NOT_ENOUGH,
+        SERVER_BUSY,
+        CREATE_SUCCESS,
         UPDATE_SUCCESS,
         UPDATE_FAILED,
     }

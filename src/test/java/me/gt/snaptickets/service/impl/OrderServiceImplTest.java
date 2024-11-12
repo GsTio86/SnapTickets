@@ -67,8 +67,7 @@ class OrderServiceImplTest {
             return;
         }
         System.out.println("訂單資訊: " + order);
-        order.setOrderStatus(Order.Status.PAID);
-        orderService.updateOrder(order);
+        orderService.updateOrderStatus(order.getOrderId(), order.getOrderStatus());
         System.out.println("更新訂單成功");
     }
 

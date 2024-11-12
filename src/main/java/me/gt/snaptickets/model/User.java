@@ -1,5 +1,6 @@
 package me.gt.snaptickets.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -16,6 +17,7 @@ public class User {
     private String username;
 
     @Schema(description = "密碼")
+    @JsonIgnore
     private String password;
 
     @Schema(description = "姓名")
@@ -31,6 +33,10 @@ public class User {
     private String address;
 
     @Schema(description = "建立日期")
-    private LocalDateTime createdAt;
+    @Builder.Default
+    @JsonIgnore
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+
 
 }

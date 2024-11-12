@@ -36,10 +36,12 @@ public class Order {
     private Status orderStatus = Status.PENDING;
 
     @Schema(description = "訂單建立時間")
-    private LocalDateTime createdAt;
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Schema(description = "訂單更新時間")
-    private LocalDateTime updatedAt;
+    @Builder.Default
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     @Transient
     private User user;

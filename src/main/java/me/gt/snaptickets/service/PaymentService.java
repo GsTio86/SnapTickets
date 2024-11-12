@@ -15,7 +15,7 @@ public interface PaymentService {
      *
      * @param orderDto 訂單
      *
-     * @return 付款頁面
+     * @return 付款物件
      */
     String createPayment(OrderDto orderDto);
 

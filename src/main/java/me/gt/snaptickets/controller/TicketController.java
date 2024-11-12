@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/ticket")
 @Tag(name = "票券 API", description = "管理票券的操作")
@@ -32,7 +33,7 @@ public class TicketController {
             ticketService.createTicket( ticketDto.convertToTicket());
             return ResponseEntity.ok("票券已創建");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body("建立票券失敗");
         }
     }
 

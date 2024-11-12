@@ -18,7 +18,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-
+@CrossOrigin
 @RestController
 @RequestMapping("/payment")
 @Tag(name = "付款 API", description = "處理付款完成的金流操作")
@@ -86,7 +86,7 @@ public class PaymentController {
             paymentService.updatePaymentStatus(id, status.getName());
             return ResponseEntity.ok("付款資料更新成功");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("錯誤|" + e.getMessage());
+            return ResponseEntity.badRequest().body("錯誤|付款資料更新失敗");
         }
     }
 
@@ -97,7 +97,7 @@ public class PaymentController {
             paymentService.deletePayment(id);
             return ResponseEntity.ok("付款資料刪除成功");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("錯誤|" + e.getMessage());
+            return ResponseEntity.badRequest().body("錯誤|付款資料刪除失敗");
         }
     }
 

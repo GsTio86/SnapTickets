@@ -32,7 +32,6 @@ public class PasswordUtil {
      * @return JWT Token
      */
     public static String generateJwtToken(User user, String jwtSecret) {
-        System.out.println("key: " + jwtSecret);
         return Jwts.builder()
                 .setSubject(user.getUsername())
                 .claim("email", user.getEmail())

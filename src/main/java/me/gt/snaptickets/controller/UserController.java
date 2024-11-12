@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@CrossOrigin
 @RestController
 @Tag(name = "會員 API", description = "處理會員帳號操作")
 public class UserController {

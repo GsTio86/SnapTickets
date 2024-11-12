@@ -1,28 +1,28 @@
 package me.gt.snaptickets.service;
 
-import me.gt.snaptickets.model.User;
+import me.gt.snaptickets.model.AdminUser;
 
-public interface UserService {
+public interface AdminUserService {
 
     /**
      * 註冊會員
      *
-     * @param user 會員資訊
+     * @param adminUser 管理員帳號
      * @return 註冊狀態
      */
-    RegistrationStatus registerUser(User user);
+    RegistrationStatus registerAdminUser(AdminUser adminUser);
 
     /**
-     * 會員登入
+     * 透過管理員名稱查詢管理員
      *
-     * @param identifier 會員 (帳號或信箱)
-     * @param password 會員密碼
-     * @return 會員資訊
+     * @param identifier 管理員帳號(帳號或信箱)
+     * @return 管理員資訊
      */
-    User loginUser(String identifier, String password);
+    AdminUser loginUser(String identifier, String password);
+
 
     /**
-     * 會員Token登入
+     * 管理員Token登入
      *
      * @param username 會員名稱
      * @param password 會員密碼
@@ -31,37 +31,37 @@ public interface UserService {
     boolean verifyTokenLogin(String username, String password);
 
     /**
-     * 透過會員名稱查詢會員
+     * 透過管理員名稱查詢管理員
      *
-     * @param username 會員名稱
-     * @return 會員資訊
+     * @param username 管理員名稱
+     * @return 管理員資訊
      */
-    User getByUsername(String username);
+    AdminUser getByUsername(String username);
 
     /**
-     * 更新會員資訊
+     * 更新管理員資訊
      *
-     * @param user 會員資訊
+     * @param adminUser 管理員資訊
      *
      * @return 更新狀態
      */
-    boolean updateUser(User user);
+    boolean updateUser(AdminUser adminUser);
 
     /**
-     * 更新會員密碼
+     * 更新管理員密碼
      *
-     * @param username 會員名稱
-     * @param oldPassword 會員舊密碼
-     * @param newPassword 會員新密碼
+     * @param username 管理員名稱
+     * @param oldPassword 管理員舊密碼
+     * @param newPassword 管理員新密碼
      *
      * @return 帳號狀態
      */
     AuthStatus updatePassword(String username, String oldPassword, String newPassword);
 
     /**
-     * 刪除會員
+     * 刪除管理員
      *
-     * @param username 會員名稱
+     * @param username 管理員名稱
      */
     void deleteUser(String username);
 

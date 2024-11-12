@@ -2,6 +2,7 @@ package me.gt.snaptickets.util;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import me.gt.snaptickets.model.AdminUser;
 import me.gt.snaptickets.model.User;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
@@ -35,6 +36,23 @@ public class PasswordUtil {
         return Jwts.builder()
                 .setSubject(user.getUsername())
                 .claim("email", user.getEmail())
+                .claim("password", user.getPassword())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+                .signWith(SignatureAlgorithm.HS256, jwtSecret)
+                .compact();
+    }
+
+    /**
+     * 生成 JWT Token
+     * @param adminUser
+     * @return JWT Token
+     */
+    public static String generateJwtToken(AdminUser adminUser, String jwtSecret) {
+        return Jwts.builder()
+                .setSubject(adminUser.getUsername())
+                .claim("email", adminUser.getEmail())
+                .claim("password", adminUser.getPassword())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(SignatureAlgorithm.HS256, jwtSecret)

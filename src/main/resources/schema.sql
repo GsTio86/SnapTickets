@@ -114,3 +114,21 @@ COMMENT ON COLUMN user_ticket.issuedAt IS '獲得時間';
 COMMENT ON COLUMN user_ticket.usedAt IS '使用時間';
 COMMENT ON COLUMN user_ticket.expiredAt IS '使用期限';
 
+
+-- 建立管理員資料表
+CREATE TABLE IF NOT EXISTS admins (
+    username VARCHAR(20) PRIMARY KEY,
+    password VARCHAR NOT NULL,
+    name VARCHAR(20),
+    email VARCHAR(50),
+    permission VARCHAR(20),
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 設定管理員資料表的註解
+COMMENT ON COLUMN admins.username IS '帳號';
+COMMENT ON COLUMN admins.password IS '密碼';
+COMMENT ON COLUMN admins.name IS '姓名';
+COMMENT ON COLUMN admins.email IS '電子郵件';
+COMMENT ON COLUMN admins.permission IS '權限';
+COMMENT ON COLUMN admins.createdAt IS '建立時間';

@@ -67,7 +67,7 @@ export default {
 
     const updateUser = async () => {
       try {
-        await axios.put(`${import.meta.env.VITE_API_URL}/user`, user.value, {
+        await axios.put(`${import.meta.env.VITE_API_URL}/user/update/${username}`, user.value, {
           headers: {
             Authorization: `Bearer ${token}`
           }

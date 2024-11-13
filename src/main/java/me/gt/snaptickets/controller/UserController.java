@@ -2,6 +2,7 @@ package me.gt.snaptickets.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import me.gt.snaptickets.dto.ResetPasswordDto;
 import me.gt.snaptickets.dto.UserDto;
 import me.gt.snaptickets.model.Order;
 import me.gt.snaptickets.model.User;
@@ -60,6 +61,12 @@ public class UserController {
         }
         String token = PasswordUtil.generateJwtToken(user,jwtSecret);
         return ResponseEntity.ok().body(Map.of("username", user.getUsername(), "token", token));
+    }
+
+    @Operation(summary = "重設密碼")
+    @PutMapping("/auth/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
+        return updatePassword(resetPasswordDto.getUsername(), resetPasswordDto.getOldPassword(), resetPasswordDto.getNewPassword());
     }
 
     @Operation(summary = "查詢帳號資料")

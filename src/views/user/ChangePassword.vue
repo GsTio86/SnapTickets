@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import {ref, onMounted, inject} from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import axios from 'axios';
@@ -32,6 +32,7 @@ export default {
     const router = useRouter();
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
+    const setLoginStatus = inject('setLoginStatus');
 
     const form = ref({
       username: '',
@@ -82,8 +83,11 @@ export default {
               }
             }
         );
-        ElMessage.success('密碼更改成功');
-        router.push('/profile');
+        ElMessage.success('密碼更改成功，請重新登入');
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        setLoginStatus(false);
+        router.push('/login');
       } catch (error) {
         ElMessage.error(error.response?.data || '密碼重設失敗');
       }

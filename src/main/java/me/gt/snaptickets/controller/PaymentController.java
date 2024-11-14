@@ -20,7 +20,6 @@ import java.util.Map;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/payment")
 @Tag(name = "付款 API", description = "處理付款完成的金流操作")
 public class PaymentController {
 
@@ -29,7 +28,7 @@ public class PaymentController {
 
 
     @Operation(summary = "查詢付款資料")
-    @GetMapping(value = "/info/{id}")
+    @GetMapping(value = "/admin/payment/info/{id}")
     public ResponseEntity<String> getTradeInfo(@PathVariable("id") String paymentId) {
         AllInOne aio = new AllInOne("");
         QueryTradeInfoObj queryTradeInfoObj = new QueryTradeInfoObj();
@@ -44,32 +43,32 @@ public class PaymentController {
     }
 
     @Operation(summary = "查詢所有付款資料")
-    @GetMapping(value = "/payments")
+    @GetMapping(value = "/admin/payment/all")
     public ResponseEntity<List<Payment>> getAllPayments() {
         return ResponseEntity.ok(paymentService.getAll());
     }
 
     @Operation(summary = "查詢指定狀態的付款資料")
-    @GetMapping(value = "/status/{status}")
+    @GetMapping(value = "/admin/payment/status/{status}")
     public ResponseEntity<List<Payment>> getAllByPaymentStatus(@PathVariable("status") Payment.Status status) {
         return ResponseEntity.ok(paymentService.getAllByPaymentStatus(status.getName()));
     }
 
 
     @Operation(summary = "查詢指定付款方式的付款資料")
-    @GetMapping(value = "/method/{method}")
+    @GetMapping(value = "/admin/payment/method/{method}")
     public ResponseEntity<List<Payment>> getAllByPaymentMethod(@PathVariable("method") String method) {
         return ResponseEntity.ok(paymentService.getAllByPaymentMethod(method));
     }
 
     @Operation(summary = "查詢指定訂單編號的付款資料")
-    @GetMapping(value = "/order/{orderId}")
+    @GetMapping(value = "/admin/payment/order/{orderId}")
     public ResponseEntity<Payment> getPaymentByOrderId(@PathVariable("orderId") String orderId) {
         return ResponseEntity.ok(paymentService.getPaymentByOrderId(orderId));
     }
 
     @Operation(summary = "查詢指定條件的付款資料")
-    @GetMapping(value = "/search")
+    @GetMapping(value = "/admin/payment/search")
     public ResponseEntity<List<Payment>> searchPayments(
             @RequestParam(value = "paymentId", required = false) String paymentId,
             @RequestParam(value = "orderId", required = false) String orderId,
@@ -80,10 +79,10 @@ public class PaymentController {
     }
 
     @Operation(summary = "更新付款資料狀態")
-    @PutMapping(value = "/update/{id}")
+    @PutMapping(value = "/admin/payment/update/{id}")
     public ResponseEntity<String> updatePaymentStatus(@PathVariable("id") String id, @RequestParam("status") Payment.Status status) {
         try {
-            paymentService.updatePaymentStatus(id, status.getName());
+            paymentService.updatePaymentStatus(id, status.name());
             return ResponseEntity.ok("付款資料更新成功");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("錯誤|付款資料更新失敗");
@@ -91,7 +90,7 @@ public class PaymentController {
     }
 
     @Operation(summary = "刪除付款資料")
-    @DeleteMapping(value = "/delete/{id}")
+    @DeleteMapping(value = "/admin/payment/delete/{id}")
     public ResponseEntity<String> deletePayment(@PathVariable("id") String id) {
         try {
             paymentService.deletePayment(id);
@@ -102,7 +101,7 @@ public class PaymentController {
     }
 
     @Operation(summary = "處理付款結果")
-    @PostMapping(value = "/result", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.TEXT_HTML_VALUE)
+    @PostMapping(value = "/payment/result", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.TEXT_HTML_VALUE)
     public ResponseEntity<String> doPaymentResult(@RequestParam Map<String, String> result) {
         PaymentService.PaymentResult paymentResult = paymentService.processPaymentResult(new Hashtable<>(result));
         if (paymentResult.statusCode() == 1 || paymentResult.statusCode() == 2) {
@@ -114,7 +113,7 @@ public class PaymentController {
 
 
     @Operation(summary = "處理顯示給使用者的付款結果")
-    @PostMapping(value = "/client", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.TEXT_HTML_VALUE)
+    @PostMapping(value = "/payment/client", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.TEXT_HTML_VALUE)
     public ModelAndView doClientPaymentResult(@RequestParam Map<String, String> result) {
         PaymentService.PaymentResult paymentResult = paymentService.processPaymentResult(new Hashtable<>(result));
         ModelAndView model = new ModelAndView("付款結果");

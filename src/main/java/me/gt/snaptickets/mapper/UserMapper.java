@@ -3,6 +3,8 @@ package me.gt.snaptickets.mapper;
 import me.gt.snaptickets.model.User;
 import org.apache.ibatis.annotations.*;
 
+import java.util.List;
+
 @Mapper
 public interface UserMapper {
 
@@ -15,6 +17,9 @@ public interface UserMapper {
 
     @Select("SELECT * FROM users WHERE email = #{email}")
     User getByEmail(String email);
+
+    @Select("SELECT * FROM users")
+    List<User> getAllUsers();
 
     @Update("UPDATE users SET password = #{password} WHERE username = #{username}")
     void updatePassword(String username, String password);

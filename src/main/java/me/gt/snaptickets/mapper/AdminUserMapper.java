@@ -3,6 +3,8 @@ package me.gt.snaptickets.mapper;
 import me.gt.snaptickets.model.AdminUser;
 import org.apache.ibatis.annotations.*;
 
+import java.util.List;
+
 @Mapper
 public interface AdminUserMapper {
 
@@ -16,6 +18,9 @@ public interface AdminUserMapper {
     @Select("SELECT * FROM admins WHERE email = #{email}")
     AdminUser getByEmail(String email);
 
+    @Select("SELECT * FROM admins")
+    List<AdminUser> getAll();
+
     @Update("UPDATE admins SET password = #{password} WHERE username = #{username}")
     void updatePassword(String username, String password);
 
@@ -24,4 +29,5 @@ public interface AdminUserMapper {
 
     @Delete("DELETE FROM admins WHERE username = #{username}")
     void deleteUser(String username);
+
 }

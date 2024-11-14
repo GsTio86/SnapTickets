@@ -2,6 +2,8 @@ package me.gt.snaptickets.service;
 
 import me.gt.snaptickets.model.User;
 
+import java.util.List;
+
 public interface UserService {
 
     /**
@@ -37,6 +39,13 @@ public interface UserService {
      * @return 會員資訊
      */
     User getByUsername(String username);
+
+    /**
+     * 取得所有會員
+     *
+     * @return 會員列表
+     */
+    List<User> getAllUsers();
 
     /**
      * 更新會員資訊

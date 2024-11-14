@@ -2,6 +2,8 @@ package me.gt.snaptickets.service;
 
 import me.gt.snaptickets.model.AdminUser;
 
+import java.util.List;
+
 public interface AdminUserService {
 
     /**
@@ -37,6 +39,14 @@ public interface AdminUserService {
      * @return 管理員資訊
      */
     AdminUser getByUsername(String username);
+
+
+    /**
+     * 取得所有管理員
+     *
+     * @return 管理員帳號列表
+     */
+    List<AdminUser> getAllUsers();
 
     /**
      * 更新管理員資訊

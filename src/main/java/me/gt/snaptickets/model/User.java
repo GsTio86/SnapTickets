@@ -34,7 +34,6 @@ public class User {
 
     @Schema(description = "建立日期")
     @Builder.Default
-    @JsonIgnore
     private LocalDateTime createdAt = LocalDateTime.now();
 
 

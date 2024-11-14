@@ -34,7 +34,7 @@ public class AdminUser {
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    enum Permission {
+    public enum Permission {
         ADMIN, MOD
     }
 }

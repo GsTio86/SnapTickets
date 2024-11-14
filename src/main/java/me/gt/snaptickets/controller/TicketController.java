@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Map;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/ticket")
 @Tag(name = "票券 API", description = "管理票券的操作")
 public class TicketController {
 
@@ -26,19 +26,24 @@ public class TicketController {
     @Autowired
     private ImageService imageService;
 
-    @Operation(summary = "建立票券")
-    @PostMapping(value = "/create")
-    public ResponseEntity<String> createTicket(@RequestBody TicketDto ticketDto) {
-        try {
-            ticketService.createTicket( ticketDto.convertToTicket());
-            return ResponseEntity.ok("票券已創建");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("建立票券失敗");
+    @Operation(summary = "獲取票券資料")
+    @GetMapping("/ticket/info/{id}")
+    public ResponseEntity<Object> getTicketById(@PathVariable String id) {
+        Ticket ticket = ticketService.getByTicketId(id);
+        if (ticket == null) {
+            return ResponseEntity.badRequest().body("查無此票券");
         }
+        return ResponseEntity.ok(ticket);
+    }
+
+    @Operation(summary = "獲取所有票券")
+    @GetMapping("/ticket/all")
+    public ResponseEntity<Object> getAllTickets() {
+        return ResponseEntity.ok(ticketService.getAllTickets());
     }
 
     @Operation(summary = "圖片網址")
-    @GetMapping(value = "/{id}/image.png", produces = MediaType.IMAGE_PNG_VALUE)
+    @GetMapping(value = "/ticket/{id}/image.png", produces = MediaType.IMAGE_PNG_VALUE)
     public ResponseEntity<byte[]> getImage(@PathVariable String id) {
         Ticket ticket = ticketService.getByTicketId(id);
         if (ticket == null) {
@@ -48,7 +53,7 @@ public class TicketController {
     }
 
     @Operation(summary = "圖片網址(指定寬高)")
-    @GetMapping(value = "/{id}/{width}x{height}/image.png", produces = MediaType.IMAGE_PNG_VALUE)
+    @GetMapping(value = "/ticket/{id}/{width}x{height}/image.png", produces = MediaType.IMAGE_PNG_VALUE)
     public ResponseEntity<byte[]> getImage(@PathVariable String id, @PathVariable int width, @PathVariable int height) {
         Ticket ticket = ticketService.getByTicketId(id);
         if (ticket == null) {
@@ -62,8 +67,20 @@ public class TicketController {
         return ResponseEntity.ok().body(resizedImage);
     }
 
+    @Operation(summary = "建立票券")
+    @PostMapping(value = "/admin/ticket/create")
+    public ResponseEntity<Object> createTicket(@RequestBody TicketDto ticketDto) {
+        try {
+            Ticket ticket = ticketDto.convertToTicket();
+            ticketService.createTicket(ticket);
+            return ResponseEntity.ok().body(Map.of( "ticketId", ticket.getTicketId()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("建立票券失敗");
+        }
+    }
+
     @Operation(summary = "上傳票券圖片")
-    @PostMapping(value = "/upload/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/admin/ticket/upload/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadImage(@PathVariable String id, @RequestPart MultipartFile image) {
         try {
             TicketService.ActionStatus status = ticketService.updateImage(id, image.getBytes());
@@ -76,24 +93,8 @@ public class TicketController {
         }
     }
 
-    @Operation(summary = "獲取票券資料")
-    @GetMapping("/info/{id}")
-    public ResponseEntity<Object> getTicketById(@PathVariable String id) {
-        Ticket ticket = ticketService.getByTicketId(id);
-        if (ticket == null) {
-            return ResponseEntity.badRequest().body("查無此票券");
-        }
-        return ResponseEntity.ok(ticket);
-    }
-
-    @Operation(summary = "獲取所有票券")
-    @GetMapping("/all")
-    public ResponseEntity<Object> getAllTickets() {
-        return ResponseEntity.ok(ticketService.getAllTickets());
-    }
-
     @Operation(summary = "更新票券")
-    @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping( "/admin/ticket/update/{id}")
     public ResponseEntity<String> updateTicket(@PathVariable String id, @RequestBody TicketDto ticketDto) {
         TicketService.ActionStatus status = ticketService.updateTicket(ticketDto.convertToTicket(id));
         if (status == TicketService.ActionStatus.UPDATE_FAILED) {
@@ -103,7 +104,7 @@ public class TicketController {
     }
 
     @Operation(summary = "刪除票券")
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/admin/ticket/delete/{id}")
     public ResponseEntity<String> deleteTicket(@PathVariable String id) {
         TicketService.ActionStatus status = ticketService.deleteTicket(id);
         if (status == TicketService.ActionStatus.DELETE_FAILED) {

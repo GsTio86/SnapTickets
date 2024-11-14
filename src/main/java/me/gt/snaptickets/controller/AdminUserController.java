@@ -1,6 +1,5 @@
 package me.gt.snaptickets.controller;
 
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import me.gt.snaptickets.dto.AdminUserDto;
 import me.gt.snaptickets.model.AdminUser;
@@ -16,7 +15,6 @@ import java.util.Map;
 
 @CrossOrigin
 @RestController
-@Hidden
 @RequestMapping("/admin")
 public class AdminUserController {
 
@@ -53,7 +51,7 @@ public class AdminUserController {
     }
 
     @Operation(summary = "透過帳號查詢資料")
-    @GetMapping("/user/info/{username}")
+    @GetMapping("/account/info/{username}")
     public ResponseEntity<Object> getUserByUsername(@PathVariable String username) {
         AdminUser user = userService.getByUsername(username);
         if (user == null) {
@@ -62,10 +60,24 @@ public class AdminUserController {
         return ResponseEntity.ok(AdminUserDto.fromUser(user));
     }
 
+    @Operation(summary = "查詢所有帳號")
+    @GetMapping("/account/all")
+    public ResponseEntity<List<AdminUser>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
+
     @Operation(summary = "更新帳號資訊")
-    @PutMapping("/user")
-    public ResponseEntity<Object> updateUser(@RequestBody AdminUserDto user) {
-        boolean success = userService.updateUser(user.convertToUser());
+    @PutMapping("/account/update/{username}")
+    public ResponseEntity<Object> updateUser(@PathVariable String username,  @RequestBody AdminUserDto user) {
+        AdminUser source = userService.getByUsername(username);
+        if (source == null) {
+            return ResponseEntity.badRequest().body("查無此帳號");
+        }
+        AdminUser target = user.convertToUser();
+        if (source.getPermission() == AdminUser.Permission.MOD && target.getPermission() == AdminUser.Permission.ADMIN) {
+            return ResponseEntity.badRequest().body("權限不足，無法修改為管理員權限");
+        }
+        boolean success = userService.updateUser(target);
         if (success) {
             return ResponseEntity.ok("更改資料成功");
         }
@@ -73,7 +85,7 @@ public class AdminUserController {
     }
 
     @Operation(summary = "更改帳號密碼")
-    @PutMapping("/change-password/{username}")
+    @PutMapping("/account/change-password/{username}")
     public ResponseEntity<String> updatePassword(@PathVariable String username, @RequestParam String oldPassword, @RequestParam String newPassword) {
         String validationMessage = PasswordUtil.validatePassword(newPassword); // 驗證新密碼是否符合安全性要求
         if (validationMessage != null) {
@@ -89,7 +101,7 @@ public class AdminUserController {
     }
 
     @Operation(summary = "刪除帳號")
-    @DeleteMapping("/user/{username}")
+    @DeleteMapping("/account/delete/{username}")
     public ResponseEntity<String> deleteUser(@PathVariable String username) {
         userService.deleteUser(username);
         return ResponseEntity.ok("帳號已刪除");

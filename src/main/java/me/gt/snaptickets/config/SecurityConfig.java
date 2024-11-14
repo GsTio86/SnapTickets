@@ -32,10 +32,10 @@ public class SecurityConfig {
     @Order(1)
     public SecurityFilterChain adminSecurityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .securityMatcher("/admin/**")
+                .securityMatcher("/admin/user/**", "/admin/account/**", "/admin/order/**", "/admin/payment/**",  "/admin/ticket/**")
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/admin/**").authenticated())
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/admin/user/**", "/admin/account/**", "/admin/order/**", "/admin/payment/**", "/admin/ticket/**").authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(adminJwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -45,10 +45,10 @@ public class SecurityConfig {
     @Order(2)
     public SecurityFilterChain userSecurityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .securityMatcher("/user/**",  "/order/**")
+                .securityMatcher("/user/**", "/order/checkout")
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/user/**",  "/order/**").authenticated())
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/user/**", "/order/checkout").authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -56,11 +56,11 @@ public class SecurityConfig {
 
     @Bean
     @Order(3)
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> {
-            auth.requestMatchers( "/","/api/**","/swagger-ui/**", "/api-docs/**", "/auth/**",
+            auth.requestMatchers( "/","/api/**","/swagger-ui/**", "/api-docs/**", "/auth/**", "/admin/auth/**",
                              "/ticket/info/*","/ticket/all", "/ticket/*/image.png", "/ticket/*/*/image.png",
                     "/payment/client", "/payment/result")
                     .permitAll();

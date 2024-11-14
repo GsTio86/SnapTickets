@@ -98,13 +98,12 @@ public class UserController {
     }
 
     @Operation(summary = "更新帳號資訊")
-    @PutMapping("/user/update")
-    public ResponseEntity<Object> updateUser(@RequestBody UserDto user) {
-        boolean success = userService.updateUser(user.convertToUser());
-        if (success) {
-            return ResponseEntity.ok("更改資料成功");
+    @PutMapping("/user/update/{username}")
+    public ResponseEntity<Object> updateUser(@PathVariable("username") String username, @RequestBody UserDto user) {
+        if (!username.equals(user.getUsername())) {
+            return ResponseEntity.badRequest().body("更改資料失敗");
         }
-        return ResponseEntity.badRequest().body("更改資料失敗");
+        return updateUser(user);
     }
 
     @Operation(summary = "更改帳號密碼")
@@ -123,8 +122,30 @@ public class UserController {
         };
     }
 
+    @Operation(summary = "查詢帳號資料")
+    @GetMapping("/admin/user/info")
+    public ResponseEntity<Object> getUserDataByUsername(@RequestParam String username) {
+        return getUserByUsername(username);
+    }
+
+    @Operation(summary = "獲取所有帳號資料")
+    @GetMapping("/admin/user/all")
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
+
+    @Operation(summary = "更新帳號資訊")
+    @PutMapping("/admin/user/update")
+    public ResponseEntity<Object> updateUser(@RequestBody UserDto user) {
+        boolean success = userService.updateUser(user.convertToUser());
+        if (success) {
+            return ResponseEntity.ok("更改資料成功");
+        }
+        return ResponseEntity.badRequest().body("更改資料失敗");
+    }
+
     @Operation(summary = "刪除帳號")
-    @DeleteMapping("/user/delete/{username}")
+    @DeleteMapping("/admin/user/delete/{username}")
     public ResponseEntity<String> deleteUser(@PathVariable String username) {
         userService.deleteUser(username);
         return ResponseEntity.ok("帳號已刪除");

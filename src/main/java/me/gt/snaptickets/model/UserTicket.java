@@ -29,7 +29,7 @@ public class UserTicket {
 
     @Schema(description = "票券代碼")
     @Builder.Default
-    private String code = IdUtil.generateUserTicketId();
+    private String code = IdUtil.generateTicketCode();
 
     @Schema(description = "使用狀態")
     @Builder.Default

@@ -7,6 +7,8 @@ import me.gt.snaptickets.util.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class AdminUserServiceImpl implements AdminUserService {
 
@@ -61,6 +63,11 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Override
     public AdminUser getByUsername(String username) {
         return adminUserMapper.getByUsername(username);
+    }
+
+    @Override
+    public List<AdminUser> getAllUsers() {
+        return adminUserMapper.getAll();
     }
 
     @Override

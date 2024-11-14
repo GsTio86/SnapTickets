@@ -28,8 +28,11 @@ public class TicketDto {
     @Schema(description = "庫存", example = "100")
     private Integer stock;
 
-    @Schema(description = "活動日期", example = "2024/12/31 12:00:00")
-    private String eventDate;
+    @Schema(description = "開賣日期", example = "2024/12/31 12:00:00")
+    private String startDate;
+
+    @Schema(description = "結束日期", example = "2024/12/31 12:00:00")
+    private String endDate;
 
     /**
      * 將 TicketDto 轉換為 Ticket
@@ -42,7 +45,8 @@ public class TicketDto {
                 .description(description)
                 .price(price)
                 .stock(stock)
-                .startDate(parseEventDate())
+                .startDate(parseEventDate(startDate))
+                .endDate(parseEventDate(endDate))
                 .build();
     }
 
@@ -60,13 +64,14 @@ public class TicketDto {
                 .description(description)
                 .price(price)
                 .stock(stock)
-                .startDate(parseEventDate())
+                .startDate(parseEventDate(startDate))
+                .endDate(parseEventDate(endDate))
                 .build();
     }
 
-    private LocalDateTime parseEventDate() {
+    private LocalDateTime parseEventDate(String date) {
         try {
-            return LocalDateTime.parse(eventDate, DateUtil.standardDataFormat);
+            return LocalDateTime.parse(date, DateUtil.standardDataFormat);
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("日期格式不正確，應為 " + DateUtil.standardDataFormat);
         }

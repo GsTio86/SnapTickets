@@ -23,6 +23,9 @@ public class AdminUserDto {
     @Schema(description = "電子郵件")
     private String email;
 
+    @Schema(description = "權限")
+    private AdminUser.Permission permission;
+
     /**
      * 轉換成 AdminUser 物件
      * @return AdminUser
@@ -33,6 +36,7 @@ public class AdminUserDto {
                 .password(password)
                 .name(name)
                 .email(email)
+                .permission(permission)
                 .build();
     }
 
@@ -48,6 +52,7 @@ public class AdminUserDto {
                 .username(user.getUsername())
                 .name(user.getName())
                 .email(user.getEmail())
+                .permission(user.getPermission())
                 .build();
     }
 }

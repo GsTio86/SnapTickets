@@ -35,8 +35,8 @@ public interface TicketMapper {
             "name = #{name}, description = #{description}, " +
             "price = #{price}, " +
             "startdate = #{startDate}, " +
-            "enddate = #{endDate}" +
-            " = CURRENT_TIMESTAMP " +
+            "enddate = #{endDate}, " +
+            "updatedat = CURRENT_TIMESTAMP " +
             "WHERE ticketid = #{ticketId}")
     int updateTicket(Ticket ticket);
 

@@ -26,7 +26,7 @@ public class AdminJwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String header = request.getHeader("Admin-Authorization");
+        String header = request.getHeader("AdminAuthorization");
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
             try {
@@ -47,7 +47,6 @@ public class AdminJwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }

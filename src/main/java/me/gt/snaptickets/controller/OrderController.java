@@ -15,7 +15,6 @@ import java.util.List;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/order")
 @Tag(name = "訂單 API", description = "處理訂單的操作")
 public class OrderController {
 
@@ -26,7 +25,7 @@ public class OrderController {
     private PaymentService paymentService;
 
     @Operation(summary = "結帳")
-    @PostMapping("/checkout")
+    @PostMapping("/order/checkout")
     public ResponseEntity<String> createPaymentForm(@RequestBody OrderDto orderDto) {
         try {
             String form = paymentService.createPayment(orderDto);
@@ -37,19 +36,19 @@ public class OrderController {
     }
 
     @Operation(summary = "查詢所有訂單")
-    @GetMapping("/orders")
+    @GetMapping("/admin/order/all")
     public ResponseEntity<List<Order>> getAllOrders() {
         return ResponseEntity.ok(orderService.getAllOrders());
     }
 
     @Operation(summary = "查詢訂單")
-    @GetMapping("/info/{id}")
+    @GetMapping("/admin/order/info/{id}")
     public ResponseEntity<Order> getOrder(@PathVariable("id") String id) {
         return ResponseEntity.ok(orderService.getOrderByOrderId(id));
     }
 
     @Operation(summary = "更新訂單狀態")
-    @PostMapping("/update/{id}")
+    @PostMapping("/admin/order/update/{id}")
     public ResponseEntity<String> updateOrderStatus(@PathVariable("id") String id, @RequestBody Order.Status status) {
         OrderService.ActionStatus action = orderService.updateOrderStatus(id, status);
         if (action == OrderService.ActionStatus.UPDATE_SUCCESS) {
@@ -60,7 +59,7 @@ public class OrderController {
     }
 
     @Operation(summary = "刪除訂單")
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/admin/order/delete/{id}")
     public ResponseEntity<String> deleteOrder(@PathVariable("id") String id) {
         orderService.deleteOrder(id);
         return ResponseEntity.ok("刪除成功");

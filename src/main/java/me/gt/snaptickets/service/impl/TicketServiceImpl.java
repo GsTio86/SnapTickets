@@ -70,6 +70,11 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
+    public void increaseStock(String ticketId, int quantity) {
+        ticketMapper.increaseAvailableStock(ticketId, quantity);
+    }
+
+    @Override
     @Transactional
     public void reduceStock(String ticketId, int quantity) {
         int updatedRows = ticketMapper.decreaseAvailableStock(ticketId, quantity); // 扣除庫存數量

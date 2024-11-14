@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -42,8 +42,8 @@ public class OrderServiceImpl implements OrderService {
         if (redisService.tryLock(lockKey, lockValue, LOCK_EXPIRY_TIME)) { // 嘗試鎖定
             try {
                 int cacheStock;
-                Optional<Object> redisStockOptional = redisService.get(stockKey);
-                if (redisStockOptional.isEmpty()) {
+                Integer currentStock = (Integer) redisService.get(stockKey).orElse(null);
+                if (currentStock == null) {
                     Ticket ticket = ticketService.getByTicketId(order.getTicketId());
                     if (ticket == null) {
                         return ActionStatus.NOT_FOUND;
@@ -51,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
                     cacheStock = ticket.getStock();
                     redisService.set(stockKey, cacheStock);
                 } else {
-                    cacheStock = (int) redisStockOptional.get();
+                    cacheStock = currentStock;
                 }
 
                 if (cacheStock >= order.getQuantity()) { // 確認庫存是否足夠
@@ -92,6 +92,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> getOrdersByUsername(String username) {
         return orderMapper.getByUsername(username);
+    }
+
+    @Override
+    public List<Order> getOrdersByStatusAndCreatedAtBefore(Order.Status status, LocalDateTime before) {
+        return orderMapper.getByOrderStatusAndCreatedAtBefore(status, before);
     }
 
     @Override

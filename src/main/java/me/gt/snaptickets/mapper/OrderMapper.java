@@ -3,6 +3,7 @@ package me.gt.snaptickets.mapper;
 import me.gt.snaptickets.model.Order;
 import org.apache.ibatis.annotations.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -38,9 +39,14 @@ public interface OrderMapper {
     @ResultMap("OrderWithUser")
     List<Order> getByOrderStatus(Order.Status orderStatus);
 
+    @Select("SELECT * FROM orders WHERE orderstatus = #{status} AND createdat < #{before}")
+    @ResultMap("OrderWithUser")
+    List<Order> getByOrderStatusAndCreatedAtBefore(Order.Status status, LocalDateTime before);
+
     @Update("UPDATE orders SET orderstatus = #{orderStatus}, updatedat = CURRENT_TIMESTAMP " + "WHERE orderid = #{orderId}")
     int updateOrderStatus(String orderId, Order.Status orderStatus);
 
     @Delete("DELETE FROM orders WHERE orderid = #{orderId}")
     void deleteOrder(String orderId);
+
 }

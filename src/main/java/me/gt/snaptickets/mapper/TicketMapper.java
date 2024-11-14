@@ -52,6 +52,9 @@ public interface TicketMapper {
     @Update("UPDATE tickets SET endDate = #{endDate} WHERE ticketid = #{ticketId}")
     void updateTicketEndDate(String ticketId, LocalDateTime endDate);
 
+    @Update("UPDATE tickets SET stock = stock + #{quantity} WHERE ticketid = #{ticketId}")
+    int increaseAvailableStock(String ticketId, int quantity);
+
     @Update("UPDATE tickets SET stock = stock - #{quantity} WHERE ticketid = #{ticketId} AND stock >= #{quantity}")
     int decreaseAvailableStock(String ticketId, int quantity);
 

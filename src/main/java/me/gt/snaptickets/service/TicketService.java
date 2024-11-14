@@ -87,6 +87,15 @@ public interface TicketService {
     void updateTicketStock(String ticketId, int quantity);
 
     /**
+     * 增加票券庫存
+     *
+     * @param ticketId 票券ID
+     * @param quantity 數量
+     *
+     */
+    void increaseStock(String ticketId, int quantity);
+
+    /**
      * 減少票券庫存
      *
      * @param ticketId 票券ID

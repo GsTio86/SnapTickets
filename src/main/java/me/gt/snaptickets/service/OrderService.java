@@ -2,6 +2,7 @@ package me.gt.snaptickets.service;
 
 import me.gt.snaptickets.model.Order;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface OrderService {
@@ -48,6 +49,14 @@ public interface OrderService {
      * @return 訂單列表
      */
     List<Order> getOrdersByUsername(String username);
+
+    /**
+     * 透過訂單狀態和建立時間查詢訂單 (在某個時間之前)
+     * @param status
+     * @param before
+     * @return 訂單列表
+     */
+    List<Order> getOrdersByStatusAndCreatedAtBefore(Order.Status status, LocalDateTime before);
 
     /**
      * 更新訂單

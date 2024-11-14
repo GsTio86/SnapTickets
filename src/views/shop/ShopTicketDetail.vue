@@ -56,6 +56,8 @@ import { ref, onMounted, computed, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import { Picture } from '@element-plus/icons-vue'
+import cookies from "vue-cookies";
+import cookies from "vue-cookies";
 
 export default {
   name: 'DetailTicket',
@@ -63,8 +65,8 @@ export default {
     const route = useRoute();
     const router = useRouter();
 
-    const token = localStorage.getItem('token');
-    const username = localStorage.getItem('username');
+    const token = cookies.get('auth-token');
+    const username = cookies.get('auth-user');
 
     const ticket = ref(null);
     const order = ref({

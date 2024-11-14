@@ -2,8 +2,8 @@
   <el-container>
     <el-main class="main-content">
       <h1>所有票券</h1>
-      <el-row :gutter="20" v-if="tickets.length > 0">
-        <el-col :span="24" :sm="24" :md="12" :lg="8" class="ticket-card-col" v-for="ticket in tickets" :key="ticket.ticketId">
+      <el-row :gutter="20" v-if="paginatedTickets.length > 0">
+        <el-col :span="24" :sm="24" :md="12" :lg="8" class="ticket-card-col" v-for="ticket in paginatedTickets" :key="ticket.ticketId">
           <el-card class="ticket-card">
             <el-image
                 :src="getImageUrl(ticket.ticketId, 300, 200)"
@@ -27,22 +27,35 @@
         </el-col>
       </el-row>
       <div v-else class="no-tickets">載入中...</div>
+      <el-pagination
+          v-if="tickets.length > pageSize"
+          :current-page="currentPage"
+          :page-size="pageSize"
+          :total="tickets.length"
+          layout="prev, pager, next, jumper"
+          background
+          class="pagination"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+      />
     </el-main>
   </el-container>
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
-import {ElMessage} from 'element-plus';
-import { Picture } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus';
+import { Picture } from '@element-plus/icons-vue';
 
 export default {
   name: 'ViewTickets',
   setup() {
     const router = useRouter();
     const tickets = ref([]);
+    const currentPage = ref(1);
+    const pageSize = ref(6);
 
     const getImageUrl = (ticketId, width, height) => {
       return `${import.meta.env.VITE_API_URL}/ticket/${ticketId}/${width}x${height}/image.png`;
@@ -67,11 +80,30 @@ export default {
           });
     });
 
+    const paginatedTickets = computed(() => {
+      const start = (currentPage.value - 1) * pageSize.value;
+      return tickets.value.slice(start, start + pageSize.value);
+    });
+
+    const handleSizeChange = (newSize) => {
+      pageSize.value = newSize;
+      currentPage.value = 1; // Reset to first page on page size change
+    };
+
+    const handleCurrentChange = (newPage) => {
+      currentPage.value = newPage;
+    };
+
     return {
       tickets,
       getImageUrl,
       formatDate,
-      goToShopTicket
+      goToShopTicket,
+      paginatedTickets,
+      currentPage,
+      pageSize,
+      handleSizeChange,
+      handleCurrentChange
     };
   }
 };
@@ -120,6 +152,13 @@ export default {
 }
 .card-image .image-slot .el-icon {
   font-size: 30px;
+}
+
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 @media (max-width: 768px) {

@@ -35,13 +35,14 @@ import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import {ElMessage} from "element-plus";
+import cookies from "vue-cookies";
 
 export default {
   name: 'Profile',
   setup() {
     const router = useRouter();
-    const token = localStorage.getItem('token');
-    const username = localStorage.getItem('username');
+    const token = cookies.get('auth-token');
+    const username = cookies.get('auth-user');
     const user = ref({
       username: '',
       password: '',

@@ -63,14 +63,14 @@ import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
 import QrcodeVue from 'qrcode.vue';
 import { Picture } from '@element-plus/icons-vue'
-
+import cookies from "vue-cookies";
 
 export default {
   name: 'Tickets',
   components: { QrcodeVue },
   setup() {
-    const token = localStorage.getItem('token');
-    const username = localStorage.getItem('username');
+    const token = cookies.get('auth-token');
+    const username = cookies.get('auth-user');
 
     const tickets = ref([]);
     const groupedTickets = ref([]);

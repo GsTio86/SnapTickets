@@ -23,6 +23,7 @@ import {inject, ref} from 'vue';
 import {ElMessage} from 'element-plus';
 import axios from "axios";
 import {useRouter} from 'vue-router';
+import cookies from "vue-cookies";
 
 export default {
   name: 'Login',
@@ -51,14 +52,14 @@ export default {
           }
         });
 
-        localStorage.setItem('token', response.data.token); // 儲存 token
-        localStorage.setItem('username', response.data.username); // 儲存使用者名稱
+        cookies.set('auth-token', response.data.token); // 儲存 token 到 cookie
+        cookies.set('auth-user', response.data.username); // 儲存使用者名稱到 cookie
         setLoginStatus(true); // 設定登入狀態
         ElMessage.success('登入成功');
         setTimeout(() => { // 登入成功後跳轉到首頁
           isLoggingIn.value = false;
           router.push('/');
-        }, 1000);
+        }, 500);
       } catch (error) {
         isLoggingIn.value = false;
         ElMessage.error('登入失敗，請檢查帳號或密碼');

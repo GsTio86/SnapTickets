@@ -25,13 +25,14 @@ import {ref, onMounted, inject} from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import axios from 'axios';
+import cookies from "vue-cookies";
 
 export default {
   name: 'ResetPassword',
   setup() {
     const router = useRouter();
-    const token = localStorage.getItem('token');
-    const username = localStorage.getItem('username');
+    const token = cookies.get('auth-token');
+    const username = cookies.get('auth-user');
     const setLoginStatus = inject('setLoginStatus');
 
     const form = ref({

@@ -12,6 +12,7 @@
 <script>
 import { ref, provide, onMounted } from 'vue';
 import NavMenu from "@/components/NavMenu.vue";
+import cookies from "vue-cookies";
 
 export default {
   name: 'App',
@@ -26,7 +27,9 @@ export default {
     };
 
     onMounted(() => {
-      if (localStorage.getItem('token')) { // 檢查是否有 Token
+      const token = cookies.get('auth-token');
+      const username = cookies.get('auth-user');
+      if (token && username) { // 檢查是否有 Token 和使用者名稱
         setLoginStatus(true);
       }
     });

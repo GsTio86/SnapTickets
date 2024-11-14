@@ -27,6 +27,7 @@
 import { inject, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from "element-plus";
+import cookies from "vue-cookies";
 
 export default {
   name: 'NavMenu',
@@ -78,8 +79,8 @@ export default {
     };
 
     const doLogout = () => {
-      localStorage.removeItem('token');
-      localStorage.removeItem('username');
+      cookies.remove('auth-token');
+      cookies.remove('auth-user');
       setLoginStatus(false);
       ElMessage.success('登出成功');
       goToHome();

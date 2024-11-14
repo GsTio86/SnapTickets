@@ -38,21 +38,19 @@
           <p>建立時間: {{ formatDate(order.createdAt) }}</p>
         </el-card>
       </div>
-      <el-config-provider :locale="zhTw">
-        <el-pagination
-            v-if="orders.length > pageSize"
-            background
-            hide-on-single-page
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="currentPage"
-            :page-size="pageSize"
-            :pager-count="11"
-            :total="orders.length"
-            layout="prev, pager, next, jumper"
-            class="pagination"
-        />
-      </el-config-provider>
+      <el-pagination
+          v-if="orders.length > pageSize"
+          background
+          hide-on-single-page
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="currentPage"
+          :page-size="pageSize"
+          :pager-count="11"
+          :total="orders.length"
+          layout="prev, pager, next, jumper"
+          class="pagination"
+      />
     </el-main>
   </el-container>
 </template>
@@ -60,16 +58,10 @@
 <script>
 import axios from 'axios';
 import { ref, onMounted, computed } from 'vue';
-import { ElConfigProvider } from 'element-plus'
-import {zhTw} from "element-plus/es/locale/index";
+import cookies from "vue-cookies";
 
 export default {
   name: 'Orders',
-  computed: {
-    zhTw() {
-      return zhTw
-    }
-  },
   setup() {
     const orders = ref([]);
     const loading = ref(true);
@@ -79,8 +71,8 @@ export default {
     const pageSize = ref(10);
 
     const fetchOrders = async () => {
-      const username = localStorage.getItem('username');
-      const token = localStorage.getItem('token');
+      const username = cookies.get('auth-user');
+      const token = cookies.get('auth-token');
 
       if (!token || !username) {
         await router.push('/login');

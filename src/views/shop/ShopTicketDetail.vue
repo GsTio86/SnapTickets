@@ -57,7 +57,6 @@ import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import { Picture } from '@element-plus/icons-vue'
 import cookies from "vue-cookies";
-import cookies from "vue-cookies";
 
 export default {
   name: 'DetailTicket',
